@@ -1,5 +1,3 @@
-import json
-
 class Tweet:
   def __init__(self, id_str, text, urls):
     self.id_str = id_str
@@ -12,3 +10,10 @@ class Tweet:
 
   def json(self):
     return self.__dict__
+
+  def json_with_string_set(self):
+    return {
+      "id_str": self.id_str,
+      "text": self.text,
+      "urls": set(self.urls)
+    }
