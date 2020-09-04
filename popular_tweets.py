@@ -6,11 +6,7 @@ from models.search_metadata_model import SearchMetadata
 from models.tweepy_model import Tweepy
 from models.tweet_model import Tweet
 
-# Search result_type on DynamoDB
-dynamodb_search_metadata_response = DynamoDB.search(DynamoDB, "Search_Metadata", "result_type", "popular")
-
-# Check if has found 'result_type'
-if (len(dynamodb_search_metadata_response) == 0):
+def retrieve_tweets_by_until_param():
   # Set initial condition to 'popular'
   until_param = date.today() - timedelta(days = 7)
 
@@ -19,21 +15,9 @@ if (len(dynamodb_search_metadata_response) == 0):
 
   # If hasn't found tweets, finishes Lambda
   if (len(search_results["statuses"]) == 0):
-    quit() #return
+    return
 
-  # Iterate over every tweet
-  for status in search_results["statuses"]:
-    tweet = Tweet(status["id_str"], status["text"], Tweet.get_entities_urls(status["entities"]["urls"]))
-    
-    # Search tweet on DynamoDB
-    dynamodb_tweet_response = DynamoDB.search(DynamoDB, "Tweets", "id_str", tweet.id_str)
-
-    # If has tweet on DynamoDB, go to the next tweet
-    if (len(dynamodb_tweet_response) > 0):
-      break
-    
-    # If hasn't found tweet on DynamoDB, save it
-    DynamoDB.put(DynamoDB, "Tweets", tweet.json_with_string_set())
+  Tweet.iterate_over_tweets_and_save(Tweet, search_results["statuses"])
 
   # Get since_id (max_id) from 'next_results'
   next_results_max_id = re.search("(?<=\?max_id=).*?(?=&)", search_results["search_metadata"]["next_results"])
@@ -42,37 +26,50 @@ if (len(dynamodb_search_metadata_response) == 0):
 
   # Save since_id on DynamoDB
   DynamoDB.put(DynamoDB, "Search_Metadata", search_metadata.json())
-  
 
-# Search since_id based on result_type
-since_id = DynamoDB.search(DynamoDB, "Search_Metadata", "result_type", "popular").pop()["since_id"]
+def retrieve_tweets_by_result_type():
+  print("result type")
+  # Search since_id based on result_type
+  since_id = DynamoDB.search(DynamoDB, "Search_Metadata", "result_type", "popular").pop()["since_id"]
 
-# Search tweets by since_id
-search_results = Tweepy.search_tweets(Tweepy, "popular", since_id=since_id)
+  # Search tweets by since_id
+  search_results = Tweepy.search_tweets(Tweepy, "popular", since_id=since_id)
 
-# If hasn't found tweets, finishes Lambda
-if (len(search_results) == 0):
-  quit() #return
+  # If hasn't found tweets, finishes Lambda
+  if (len(search_results) == 0):
+    quit() #return
 
-# Iterate over every tweet
-for status in search_results["statuses"]:
-  tweet = Tweet(status["id_str"], status["text"], Tweet.get_entities_urls(status["entities"]["urls"]))
-  
-  # Search tweet on DynamoDB
-  dynamodb_tweet_response = DynamoDB.search(DynamoDB, "Tweets", "id_str", tweet.id_str)
+  Tweet.iterate_over_tweets_and_save(Tweet, search_results["statuses"])
+  # # Iterate over every tweet
+  # for status in search_results["statuses"]:
+  #   tweet = Tweet(status["id_str"], status["text"], Tweet.get_entities_urls(status["entities"]["urls"]))
+    
+  #   # Search tweet on DynamoDB
+  #   dynamodb_tweet_response = DynamoDB.search(DynamoDB, "Tweets", "id_str", tweet.id_str)
 
-  # If a tweet has been found, passes to the next tweet 
-  if (len(dynamodb_tweet_response) > 0):
-    break
+  #   # If a tweet has been found on DynamoDB, passes to the next tweet 
+  #   if (len(dynamodb_tweet_response) > 0):
+  #     continue
 
-  # If a tweet hasn't been found, save it on DynamoDB
-  DynamoDB.put(DynamoDB, "Tweets", tweet.json_with_string_set())
+  #   # If a tweet hasn't been found, save it on DynamoDB
+  #   DynamoDB.put(DynamoDB, "Tweets", tweet.json_with_string_set())
 
-# Get since_id (max_id) from next_results
-next_results_max_id = re.search("(?<=\?max_id=).*?(?=&)", search_results["search_metadata"]["next_results"])
+  # Get since_id (max_id) from next_results
+  next_results_max_id = re.search("(?<=\?max_id=).*?(?=&)", search_results["search_metadata"]["next_results"])
 
-search_metadata = SearchMetadata("popular", next_results_max_id.group(0))
+  search_metadata = SearchMetadata("popular", next_results_max_id.group(0))
 
-# Save since_id on DynamoDB
-DynamoDB.put(DynamoDB, "Search_Metadata", search_metadata.json())
+  # Save since_id on DynamoDB
+  DynamoDB.put(DynamoDB, "Search_Metadata", search_metadata.json())
+
+# Search result_type on DynamoDB
+dynamodb_search_metadata_response = DynamoDB.search(DynamoDB, "Search_Metadata", "result_type", "popular")
+
+# Check if has found 'result_type'. If not, search by 'until'
+if (len(dynamodb_search_metadata_response) == 0):
+  print("until")
+  retrieve_tweets_by_until_param()
+  quit()
+
+retrieve_tweets_by_result_type()
 

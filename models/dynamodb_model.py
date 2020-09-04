@@ -3,7 +3,6 @@ from boto3.dynamodb.conditions import Key
 
 class DynamoDB:
   dynamodb = boto3.resource('dynamodb')
-  search_metadata_table = "Search_Metadata"
 
   def __init__(self):
     self
