@@ -37,22 +37,9 @@ def retrieve_tweets_by_result_type():
 
   # If hasn't found tweets, finishes Lambda
   if (len(search_results) == 0):
-    quit() #return
+    return
 
   Tweet.iterate_over_tweets_and_save(Tweet, search_results["statuses"])
-  # # Iterate over every tweet
-  # for status in search_results["statuses"]:
-  #   tweet = Tweet(status["id_str"], status["text"], Tweet.get_entities_urls(status["entities"]["urls"]))
-    
-  #   # Search tweet on DynamoDB
-  #   dynamodb_tweet_response = DynamoDB.search(DynamoDB, "Tweets", "id_str", tweet.id_str)
-
-  #   # If a tweet has been found on DynamoDB, passes to the next tweet 
-  #   if (len(dynamodb_tweet_response) > 0):
-  #     continue
-
-  #   # If a tweet hasn't been found, save it on DynamoDB
-  #   DynamoDB.put(DynamoDB, "Tweets", tweet.json_with_string_set())
 
   # Get since_id (max_id) from next_results
   next_results_max_id = re.search("(?<=\?max_id=).*?(?=&)", search_results["search_metadata"]["next_results"])

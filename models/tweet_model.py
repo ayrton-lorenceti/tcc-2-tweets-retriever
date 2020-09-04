@@ -25,18 +25,23 @@ class Tweet:
     }
 
   def iterate_over_tweets_and_save(self, statuses):
-    # tweets_saved = 0
+    tweets_saved = 0
 
     # Iterate over every tweet
     for status in statuses:
       tweet = Tweet(status["id_str"], status["text"], Tweet.get_entities_urls(status["entities"]["urls"]))
-      
-      # Search tweet on DynamoDB
-      dynamodb_tweet_response = DynamoDB.search(DynamoDB, "Tweets", "id_str", tweet.id_str)
 
-      # If already has tweet on DynamoDB, go to the next tweet
-      if (len(dynamodb_tweet_response) > 0):
-        continue
-      
-      # If hasn't found tweet on DynamoDB, save it
-      DynamoDB.put(DynamoDB, "Tweets", tweet.json_with_string_set())
+      Tweet.save_tweet(Tweet, tweet)
+
+      tweets_saved += 1
+  
+  def save_tweet(self, tweet):
+    # Search tweet on DynamoDB
+    dynamodb_tweet_response = DynamoDB.search(DynamoDB, "Tweets", "id_str", tweet.id_str)
+
+    # If already has tweet on DynamoDB, go to the next tweet
+    if (len(dynamodb_tweet_response) > 0):
+      return
+  
+    # If hasn't found tweet on DynamoDB, save it
+    DynamoDB.put(DynamoDB, "Tweets", tweet.json_with_string_set())
