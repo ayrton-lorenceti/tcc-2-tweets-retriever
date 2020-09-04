@@ -9,8 +9,8 @@ class Tweet:
     self.urls = urls
     self.insertion_date = str(datetime.now())
   
-  @staticmethod
-  def get_entities_urls(urls):
+  @classmethod
+  def get_entities_urls(cls, urls):
     return [url["expanded_url"] for url in urls if "expanded_url" in url]
 
   def json(self):
@@ -24,14 +24,14 @@ class Tweet:
       "insertion_date": self.insertion_date
     }
 
-  def iterate_over_tweets_and_save(self, statuses):
+  def iterate_over_tweets(self, statuses):
     tweets_saved = 0
 
     # Iterate over every tweet
     for status in statuses:
       tweet = Tweet(status["id_str"], status["text"], Tweet.get_entities_urls(status["entities"]["urls"]))
 
-      Tweet.save_tweet(Tweet, tweet)
+      tweet.save_tweet(tweet)
 
       tweets_saved += 1
   

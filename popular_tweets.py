@@ -17,7 +17,7 @@ def retrieve_tweets_by_until_param():
   if (len(search_results["statuses"]) == 0):
     return
 
-  Tweet.iterate_over_tweets_and_save(Tweet, search_results["statuses"])
+  Tweet.iterate_over_tweets(Tweet, search_results["statuses"])
 
   # Get since_id (max_id) from 'next_results'
   next_results_max_id = re.search("(?<=\?max_id=).*?(?=&)", search_results["search_metadata"]["next_results"])
@@ -39,7 +39,7 @@ def retrieve_tweets_by_result_type():
   if (len(search_results) == 0):
     return
 
-  Tweet.iterate_over_tweets_and_save(Tweet, search_results["statuses"])
+  Tweet.iterate_over_tweets(Tweet, search_results["statuses"])
 
   # Get since_id (max_id) from next_results
   next_results_max_id = re.search("(?<=\?max_id=).*?(?=&)", search_results["search_metadata"]["next_results"])
