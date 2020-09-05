@@ -6,6 +6,7 @@ from models.tweepy_model import Tweepy
 from models.tweet_model import Tweet
 
 def retrieve_tweets_by_until_param():
+  print("until")
   # Set initial condition to 'popular'
   until_param = date.today() - timedelta(days = 7)
 
@@ -21,7 +22,7 @@ def retrieve_tweets_by_until_param():
   SearchMetadata.save_since_id(search_results["search_metadata"]["next_results"])
 
 def retrieve_tweets_by_result_type():
-  print("result type")
+  print("result_type")
   # Search since_id based on result_type
   since_id = DynamoDB.search(DynamoDB, "Search_Metadata", "result_type", "popular").pop()["since_id"]
 
@@ -35,15 +36,4 @@ def retrieve_tweets_by_result_type():
   Tweet.iterate_over_tweets(search_results["statuses"])
 
   SearchMetadata.save_since_id(search_results["search_metadata"]["next_results"])
-
-# Search result_type on DynamoDB
-dynamodb_search_metadata_response = DynamoDB.search(DynamoDB, "Search_Metadata", "result_type", "popular")
-
-# Check if has found 'result_type'. If not, search by 'until'
-if (len(dynamodb_search_metadata_response) == 0):
-  print("until")
-  retrieve_tweets_by_until_param()
-  quit()
-
-retrieve_tweets_by_result_type()
 
