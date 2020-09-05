@@ -12,6 +12,18 @@ class Tweet:
   @classmethod
   def get_entities_urls(cls, urls):
     return [url["expanded_url"] for url in urls if "expanded_url" in url]
+  
+  @classmethod
+  def save_tweet(cls, tweet):
+    # Search tweet on DynamoDB
+    dynamodb_tweet_response = DynamoDB.search(DynamoDB, "Tweets", "id_str", tweet.id_str)
+
+    # If already has tweet on DynamoDB, go to the next tweet
+    if (len(dynamodb_tweet_response) > 0):
+      return
+  
+    # If hasn't found tweet on DynamoDB, save it
+    DynamoDB.put(DynamoDB, "Tweets", tweet.json_with_string_set())
 
   def json(self):
     return self.__dict__
@@ -24,7 +36,8 @@ class Tweet:
       "insertion_date": self.insertion_date
     }
 
-  def iterate_over_tweets(self, statuses):
+  @staticmethod
+  def iterate_over_tweets(statuses):
     tweets_saved = 0
 
     # Iterate over every tweet
@@ -34,14 +47,3 @@ class Tweet:
       tweet.save_tweet(tweet)
 
       tweets_saved += 1
-  
-  def save_tweet(self, tweet):
-    # Search tweet on DynamoDB
-    dynamodb_tweet_response = DynamoDB.search(DynamoDB, "Tweets", "id_str", tweet.id_str)
-
-    # If already has tweet on DynamoDB, go to the next tweet
-    if (len(dynamodb_tweet_response) > 0):
-      return
-  
-    # If hasn't found tweet on DynamoDB, save it
-    DynamoDB.put(DynamoDB, "Tweets", tweet.json_with_string_set())

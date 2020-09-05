@@ -9,7 +9,7 @@ class Tweepy:
   count = 5
 
   def __init__(self):
-    self
+    pass
   
   @staticmethod
   def search_tweets(self, result_type, until = None, since_id = None):

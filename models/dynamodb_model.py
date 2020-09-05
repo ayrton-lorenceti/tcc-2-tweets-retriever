@@ -5,7 +5,7 @@ class DynamoDB:
   dynamodb = boto3.resource('dynamodb')
 
   def __init__(self):
-    self
+    pass
   
   @staticmethod
   def search(self, table_name, key, value):

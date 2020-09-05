@@ -1,4 +1,3 @@
-import re
 from datetime import date, timedelta
 
 from models.dynamodb_model import DynamoDB
@@ -17,15 +16,9 @@ def retrieve_tweets_by_until_param():
   if (len(search_results["statuses"]) == 0):
     return
 
-  Tweet.iterate_over_tweets(Tweet, search_results["statuses"])
-
-  # Get since_id (max_id) from 'next_results'
-  next_results_max_id = re.search("(?<=\?max_id=).*?(?=&)", search_results["search_metadata"]["next_results"])
-
-  search_metadata = SearchMetadata("popular", next_results_max_id.group(0))
-
-  # Save since_id on DynamoDB
-  DynamoDB.put(DynamoDB, "Search_Metadata", search_metadata.json())
+  Tweet.iterate_over_tweets(search_results["statuses"])
+  
+  SearchMetadata.save_since_id(search_results["search_metadata"]["next_results"])
 
 def retrieve_tweets_by_result_type():
   print("result type")
@@ -39,15 +32,9 @@ def retrieve_tweets_by_result_type():
   if (len(search_results) == 0):
     return
 
-  Tweet.iterate_over_tweets(Tweet, search_results["statuses"])
+  Tweet.iterate_over_tweets(search_results["statuses"])
 
-  # Get since_id (max_id) from next_results
-  next_results_max_id = re.search("(?<=\?max_id=).*?(?=&)", search_results["search_metadata"]["next_results"])
-
-  search_metadata = SearchMetadata("popular", next_results_max_id.group(0))
-
-  # Save since_id on DynamoDB
-  DynamoDB.put(DynamoDB, "Search_Metadata", search_metadata.json())
+  SearchMetadata.save_since_id(search_results["search_metadata"]["next_results"])
 
 # Search result_type on DynamoDB
 dynamodb_search_metadata_response = DynamoDB.search(DynamoDB, "Search_Metadata", "result_type", "popular")
