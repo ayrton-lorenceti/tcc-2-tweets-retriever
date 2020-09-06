@@ -3,8 +3,8 @@ import tweepy
 
 class Tweepy:
   consumer_key = os.environ["consumer_key"]
-  consumer_secret = os.environ["consumer_secret"]
-  auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+  consumer_secret_key = os.environ["consumer_secret_key"]
+  auth = tweepy.OAuthHandler(consumer_key, consumer_secret_key)
   api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
   query = "coronavírus OR COVID-19 OR SARS-CoV-2"
   include_entities = 1
