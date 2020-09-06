@@ -1,8 +1,6 @@
 import os
 import tweepy
 
-from loguru import logger
-
 class Tweepy:
   consumer_key = os.environ["consumer_key"]
   consumer_secret = os.environ["consumer_secret"]
@@ -18,8 +16,6 @@ class Tweepy:
   
   @staticmethod
   def search_tweets(self, result_type, until = None, since_id = None):
-    logger.info( { "method": "Tweepy.search_tweets()", "params": { "result_type": result_type, "until": until, "since_id": since_id } } )
-
     search_results = self.api.search(q=self.query, include_entities=self.include_entities, lang=self.lang, result_type=result_type, count=self.count, until=until, since_id=since_id)
 
     return search_results

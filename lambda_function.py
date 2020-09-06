@@ -1,7 +1,7 @@
 import os
 
 from models.dynamodb_model import DynamoDB
-from retrieve_tweets import retrieve_tweets_by_result_type, retrieve_tweets_by_until_param
+from retrieve_tweets.retrieve_tweets import retrieve_tweets_by_result_type, retrieve_tweets_by_until_param
 
 def lambda_handler(event, context):
   result_type = os.environ["result_type"]

@@ -2,7 +2,6 @@ import re
 
 from datetime import datetime
 from models.dynamodb_model import DynamoDB
-from loguru import logger
 
 class SearchMetadata:
   def __init__(self, result_type, since_id):
@@ -21,13 +20,11 @@ class SearchMetadata:
   
   @staticmethod
   def save_since_id(self, search_metadata, result_type):
-    logger.info( { "method": "SearchMetadata.save_since_id()", "params": { "max_id_str": search_metadata["max_id_str"], "next_results": search_metadata["next_results"] } } )
-
     # Get since_id (max_id) from 'next_results' or "max_id_str"
     since_id = self.get_max_id_from_next_results(search_metadata["next_results"]) if result_type == "popular" else search_metadata["max_id_str"]
 
     search_metadata_obj = SearchMetadata(result_type, since_id)
 
     # Save since_id on DynamoDB
-    DynamoDB.put(DynamoDB, result_type, search_metadata_obj.json())
+    DynamoDB.put(DynamoDB, "Search_Metadata", search_metadata_obj.json())
     
