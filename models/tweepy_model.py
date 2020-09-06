@@ -1,9 +1,22 @@
+import boto3
 import os
 import tweepy
 
+def get_parameters(parameter_name):
+  client = boto3.client('ssm')
+
+  parameters_response = client.get_parameters(
+    Names = [
+      parameter_name,
+    ],
+    WithDecryption=False
+  )
+  
+  return parameters_response["Parameters"][0]["Value"]
+
 class Tweepy:
-  consumer_key = os.environ["consumer_key"]
-  consumer_secret_key = os.environ["consumer_secret_key"]
+  consumer_key = get_parameters("consumer_key")
+  consumer_secret_key = get_parameters("consumer_secret_key")
   auth = tweepy.OAuthHandler(consumer_key, consumer_secret_key)
   api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
   query = "coronavírus OR COVID-19 OR SARS-CoV-2"
