@@ -19,9 +19,14 @@ def retrieve_tweets_by_until_param(result_type):
   if (len(search_results["statuses"]) == 0):
     return
 
-  Tweet.iterate_over_tweets(search_results["statuses"])
+  tweets_saved = Tweet.iterate_over_tweets(search_results["statuses"])
   
   SearchMetadata.save_since_id(SearchMetadata, search_results["search_metadata"], result_type)
+
+  return {
+      'statusCode': 200,
+      'tweets_saved': tweets_saved
+  }
 
 
 def retrieve_tweets_by_result_type(result_type):
@@ -37,6 +42,11 @@ def retrieve_tweets_by_result_type(result_type):
   if (len(search_results) == 0):
     return
 
-  Tweet.iterate_over_tweets(search_results["statuses"])
+  tweets_saved = Tweet.iterate_over_tweets(search_results["statuses"])
 
   SearchMetadata.save_since_id(SearchMetadata, search_results["search_metadata"], result_type)
+
+  return {
+      'statusCode': 200,
+      'tweets_saved': tweets_saved
+  }  
