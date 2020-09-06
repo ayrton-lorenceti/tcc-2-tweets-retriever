@@ -13,8 +13,8 @@ def get_parameters(parameter_name):
   return parameters_response["Parameters"][0]["Value"]
 
 class Tweepy:
-  consumer_key = get_parameters("consumer_key")
-  consumer_secret_key = get_parameters("consumer_secret_key")
+  consumer_key = get_parameters("CONSUMER_KEY")
+  consumer_secret_key = get_parameters("CONSUMER_SECRET_KEY")
   auth = tweepy.OAuthHandler(consumer_key, consumer_secret_key)
   api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
   query = "coronavírus OR COVID-19 OR SARS-CoV-2"
