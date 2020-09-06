@@ -1,3 +1,5 @@
+import json
+
 from datetime import date, timedelta
 
 from models.dynamodb_model import DynamoDB
@@ -14,34 +16,39 @@ def retrieve_tweets_by_until_param(result_type):
 
   # If hasn't found tweets, finishes Lambda
   if (len(search_results["statuses"]) == 0):
-    return
+    return {
+      'statusCode': 200,
+      'message': json.dumps("No tweets found.")
+    }
 
-  tweets_saved = Tweet.iterate_over_tweets(search_results["statuses"])
+  Tweet.iterate_over_tweets(search_results["statuses"])
   
   SearchMetadata.save_since_id(SearchMetadata, search_results["search_metadata"], result_type)
 
   return {
     'statusCode': 200,
-    'tweets_saved': tweets_saved
+    'message': json.dumps("Finished tweets retrieve.")
   }
 
-
 def retrieve_tweets_by_result_type(result_type):
-  # Search since_id based on result_type
+  # Search 'since_id' based on 'result_type'
   since_id = DynamoDB.search(DynamoDB, "Search_Metadata", "result_type", result_type).pop()["since_id"]
 
-  # Search tweets by since_id
+  # Search tweets by 'since_id'
   search_results = Tweepy.search_tweets(Tweepy, result_type, since_id=since_id)
 
   # If hasn't found tweets, finishes Lambda
-  if (len(search_results) == 0):
-    return
+  if (len(search_results["statuses"]) == 0):
+    return {
+      'statusCode': 200,
+      'message': json.dumps("No tweets found.")
+    }
 
-  tweets_saved = Tweet.iterate_over_tweets(search_results["statuses"])
+  Tweet.iterate_over_tweets(search_results["statuses"])
 
   SearchMetadata.save_since_id(SearchMetadata, search_results["search_metadata"], result_type)
 
   return {
     'statusCode': 200,
-    'tweets_saved': tweets_saved
+    'message': json.dumps("Finished tweets retrieve.")
   }  

@@ -11,7 +11,8 @@ class Tweet:
   
   @classmethod
   def get_entities_urls(cls, urls):
-    return [url["expanded_url"] for url in urls if "expanded_url" in url]
+    # If has 'urls', get every 'url' from 'urls'. If not, return [""]
+    return [url["expanded_url"] for url in urls if "expanded_url" in url] if len(urls) > 0 else [""]
   
   @classmethod
   def save_tweet(cls, tweet):
@@ -21,9 +22,17 @@ class Tweet:
     # If already has tweet on DynamoDB, go to the next tweet
     if (len(dynamodb_tweet_response) > 0):
       return
-  
+
     # If hasn't found tweet on DynamoDB, save it
     DynamoDB.put(DynamoDB, "Tweets", tweet.json_with_string_set())
+
+  @staticmethod
+  def iterate_over_tweets(statuses):
+    # Iterate over every tweet
+    for status in statuses:
+      tweet = Tweet(status["id_str"], status["text"], Tweet.get_entities_urls(status["entities"]["urls"]))
+
+      tweet.save_tweet(tweet)
 
   def json(self):
     return self.__dict__
@@ -35,18 +44,4 @@ class Tweet:
       "urls": set(self.urls),
       "insertion_date": self.insertion_date
     }
-
-  @staticmethod
-  def iterate_over_tweets(statuses):
-    tweets_saved = 0
-
-    # Iterate over every tweet
-    for status in statuses:
-      tweet = Tweet(status["id_str"], status["text"], Tweet.get_entities_urls(status["entities"]["urls"]))
-
-      tweet.save_tweet(tweet)
-
-      tweets_saved += 1
-
-    return tweets_saved 
   
