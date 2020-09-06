@@ -6,12 +6,10 @@ def get_parameters(parameter_name):
   client = boto3.client('ssm')
 
   parameters_response = client.get_parameters(
-    Names = [
-      parameter_name,
-    ],
+    Names=[parameter_name],
     WithDecryption=False
   )
-  
+
   return parameters_response["Parameters"][0]["Value"]
 
 class Tweepy:
