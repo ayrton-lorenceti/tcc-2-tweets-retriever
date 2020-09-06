@@ -9,6 +9,8 @@ from models.tweepy_model import Tweepy
 from models.tweet_model import Tweet
 
 def retrieve_tweets_by_until_param(result_type):
+  logger.info("### Method: retrieve_tweets_by_until_param() ###")
+
   # Set initial condition based on Lambda
   until_param = date.today() - timedelta(days = 7)
 
@@ -34,6 +36,8 @@ def retrieve_tweets_by_until_param(result_type):
   }
 
 def retrieve_tweets_by_result_type(result_type):
+  logger.info("### Method: retrieve_tweets_by_result_type() ###")
+
   # Search 'since_id' based on 'result_type'
   since_id = DynamoDB.search(DynamoDB, "Search_Metadata", "result_type", result_type).pop()["since_id"]
 
