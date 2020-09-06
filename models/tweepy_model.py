@@ -20,7 +20,7 @@ class Tweepy:
   query = "coronavírus OR COVID-19 OR SARS-CoV-2"
   include_entities = 1
   lang = "pt"
-  count = 5
+  count = 100
 
   def __init__(self):
     pass

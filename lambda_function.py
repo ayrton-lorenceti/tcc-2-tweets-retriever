@@ -14,3 +14,5 @@ def lambda_handler(event, context):
     return retrieve_tweets_by_until_param(result_type)
 
   return retrieve_tweets_by_result_type(result_type)
+
+lambda_handler(None, None)
