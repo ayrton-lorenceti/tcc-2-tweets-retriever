@@ -1,6 +1,7 @@
 import json
 
 from datetime import date, timedelta
+from loguru import logger
 
 from models.dynamodb_model import DynamoDB
 from models.search_metadata_model import SearchMetadata
@@ -16,12 +17,14 @@ def retrieve_tweets_by_until_param(result_type):
 
   # If hasn't found tweets, finishes Lambda
   if (len(search_results["statuses"]) == 0):
+    logger.info("### Method: retrieve_tweets_by_until_param() - No tweets found. ###")
+
     return {
       'statusCode': 200,
       'message': json.dumps("No tweets found.")
     }
 
-  Tweet.iterate_over_tweets(search_results["statuses"])
+  Tweet.iterate_over_tweets(Tweet, search_results["statuses"])
   
   SearchMetadata.save_since_id(SearchMetadata, search_results["search_metadata"], result_type)
 
@@ -39,12 +42,14 @@ def retrieve_tweets_by_result_type(result_type):
 
   # If hasn't found tweets, finishes Lambda
   if (len(search_results["statuses"]) == 0):
+    logger.info("### Method: retrieve_tweets_by_result_type() - No tweets found. ###")
+    
     return {
       'statusCode': 200,
       'message': json.dumps("No tweets found.")
     }
 
-  Tweet.iterate_over_tweets(search_results["statuses"])
+  Tweet.iterate_over_tweets(Tweet, search_results["statuses"])
 
   SearchMetadata.save_since_id(SearchMetadata, search_results["search_metadata"], result_type)
 

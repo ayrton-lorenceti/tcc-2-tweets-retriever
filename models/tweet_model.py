@@ -1,8 +1,11 @@
 from datetime import datetime
+from loguru import logger
 
 from models.dynamodb_model import DynamoDB
 
 class Tweet:
+  tweets_saved = 0
+
   def __init__(self, id_str, text, urls):
     self.id_str = id_str
     self.text = text
@@ -26,13 +29,17 @@ class Tweet:
     # If hasn't found tweet on DynamoDB, save it
     DynamoDB.put(DynamoDB, "Tweets", tweet.json_with_string_set())
 
+    cls.tweets_saved += 1
+
   @staticmethod
-  def iterate_over_tweets(statuses):
+  def iterate_over_tweets(self, statuses):
     # Iterate over every tweet
     for status in statuses:
       tweet = Tweet(status["id_str"], status["text"], Tweet.get_entities_urls(status["entities"]["urls"]))
 
       tweet.save_tweet(tweet)
+    
+    logger.info("### Class: Tweet, Method: iterate_over_tweets() - Tweets saved: {} ###".format(self.tweets_saved))
 
   def json(self):
     return self.__dict__

@@ -1,6 +1,8 @@
 import re
 
 from datetime import datetime
+from loguru import logger
+
 from models.dynamodb_model import DynamoDB
 
 class SearchMetadata:
@@ -24,6 +26,8 @@ class SearchMetadata:
     since_id = self.get_max_id_from_next_results(search_metadata["next_results"]) if result_type == "popular" else search_metadata["max_id_str"]
 
     search_metadata_obj = SearchMetadata(result_type, since_id)
+
+    logger.info("### Class: SearchMetadata, Method: save_since_id() - since_id: {} ###".format(since_id))
 
     # Save 'since_id' on DynamoDB
     DynamoDB.put(DynamoDB, "Search_Metadata", search_metadata_obj.json())
