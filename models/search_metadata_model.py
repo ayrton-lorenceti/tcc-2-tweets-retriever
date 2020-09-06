@@ -1,7 +1,8 @@
 import re
-from datetime import datetime
 
+from datetime import datetime
 from models.dynamodb_model import DynamoDB
+from loguru import logger
 
 class SearchMetadata:
   def __init__(self, result_type, since_id):
@@ -14,6 +15,8 @@ class SearchMetadata:
   
   @staticmethod
   def save_since_id(next_results):
+    logger.info( { "method": "SearchMetadata.save_since_id()", "params": { "next_result": next_results } } )
+
     # Get since_id (max_id) from 'next_results'
     next_results_max_id = re.search("(?<=\?max_id=).*?(?=&)", next_results)
 

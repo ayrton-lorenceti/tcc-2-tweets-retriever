@@ -11,7 +11,7 @@ class DynamoDB:
   
   @staticmethod
   def search(self, table_name, key, value):
-    logger.info({ "method": "DynamoDB.search()", "params": { "table_name": table_name, "key": key, "value": value }})
+    logger.info( { "method": "DynamoDB.search()", "params": { "table_name": table_name, "key": key, "value": value } } )
 
     table = self.dynamodb.Table(table_name)
 
@@ -23,7 +23,7 @@ class DynamoDB:
   
   @staticmethod
   def put(self, table_name, item):
-    logger.info({ "method": "DynamoDB.put()", "params": { "table_name": table_name, "item": item }})
+    logger.info( { "method": "DynamoDB.put()", "params": { "table_name": table_name, "item": item } } )
 
     table = self.dynamodb.Table(table_name)
 
