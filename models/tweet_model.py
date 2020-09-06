@@ -54,3 +54,5 @@ class Tweet:
       tweet.save_tweet(tweet)
 
       tweets_saved += 1
+    
+    return tweets_saved
