@@ -12,16 +12,22 @@ class SearchMetadata:
 
   def json(self):
     return self.__dict__
-  
-  @staticmethod
-  def save_since_id(next_results):
-    logger.info( { "method": "SearchMetadata.save_since_id()", "params": { "next_result": next_results } } )
 
-    # Get since_id (max_id) from 'next_results'
+  @classmethod
+  def get_max_id_from_next_results(cls, next_results):
     next_results_max_id = re.search("(?<=\?max_id=).*?(?=&)", next_results)
 
-    search_metadata = SearchMetadata("popular", next_results_max_id.group(0))
+    return next_results_max_id.group(0)
+  
+  @staticmethod
+  def save_since_id(self, search_metadata, result_type):
+    logger.info( { "method": "SearchMetadata.save_since_id()", "params": { "max_id_str": search_metadata["max_id_str"], "next_results": search_metadata["next_results"] } } )
+
+    # Get since_id (max_id) from 'next_results' or "max_id_str"
+    since_id = self.get_max_id_from_next_results(search_metadata["next_results"]) if result_type == "popular" else search_metadata["max_id_str"]
+
+    search_metadata_obj = SearchMetadata(result_type, since_id)
 
     # Save since_id on DynamoDB
-    DynamoDB.put(DynamoDB, "Search_Metadata", search_metadata.json())
+    DynamoDB.put(DynamoDB, result_type, search_metadata_obj.json())
     

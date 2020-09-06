@@ -54,5 +54,6 @@ class Tweet:
       tweet.save_tweet(tweet)
 
       tweets_saved += 1
-    
-    return tweets_saved
+
+    logger.info( { "method": "Tweet.iterate_over_tweets()", "tweets_saved": tweets_saved } )  
+  
