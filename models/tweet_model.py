@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from models.dynamodb_model import DynamoDB
+from loguru import logger
 
 class Tweet:
   def __init__(self, id_str, text, urls):
@@ -11,10 +12,14 @@ class Tweet:
   
   @classmethod
   def get_entities_urls(cls, urls):
+    logger.info( { "method": "Tweet.get_entities_urls()" } )
+
     return [url["expanded_url"] for url in urls if "expanded_url" in url]
   
   @classmethod
   def save_tweet(cls, tweet):
+    logger.info( { "method": "Tweet.save_tweet()", "params": { "tweet": tweet } } )
+
     # Search tweet on DynamoDB
     dynamodb_tweet_response = DynamoDB.search(DynamoDB, "Tweets", "id_str", tweet.id_str)
 
@@ -38,6 +43,8 @@ class Tweet:
 
   @staticmethod
   def iterate_over_tweets(statuses):
+    logger.info( { "method": "Tweet.iterate_over_tweets()" } )
+
     tweets_saved = 0
 
     # Iterate over every tweet
