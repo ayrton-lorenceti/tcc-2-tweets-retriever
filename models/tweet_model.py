@@ -6,28 +6,21 @@ from models.dynamodb_model import DynamoDB
 class Tweet:
   tweets_saved = 0
 
-  def __init__(self, id_str, text, urls):
+  def __init__(self, id_str, text):
     self.id_str = id_str
     self.text = text
-    self.urls = urls
-    self.insertion_date = str(datetime.now())
-  
-  @classmethod
-  def get_entities_urls(cls, urls):
-    # If has 'urls', get every 'url' from 'urls'. If not, return [""]
-    return [url["expanded_url"] for url in urls if "expanded_url" in url] if len(urls) > 0 else [""]
-  
+
   @classmethod
   def save_tweet(cls, tweet):
     # Search tweet on DynamoDB
-    dynamodb_tweet_response = DynamoDB.search(DynamoDB, "Tweets", "id_str", tweet.id_str)
+    dynamodb_tweet_response = DynamoDB.search(DynamoDB, "Tweets2", "id_str", tweet.id_str)
 
     # If already has tweet on DynamoDB, go to the next tweet
     if (len(dynamodb_tweet_response) > 0):
       return
 
     # If hasn't found tweet on DynamoDB, save it
-    DynamoDB.put(DynamoDB, "Tweets", tweet.json_with_string_set())
+    DynamoDB.put(DynamoDB, "Tweets2", tweet.json_with_string_set())
 
     cls.tweets_saved += 1
 
@@ -35,7 +28,7 @@ class Tweet:
   def iterate_over_tweets(self, statuses):
     # Iterate over every tweet
     for status in statuses:
-      tweet = Tweet(status["id_str"], status["text"], Tweet.get_entities_urls(status["entities"]["urls"]))
+      tweet = Tweet(status["id_str"], status["text"])
 
       tweet.save_tweet(tweet)
     
@@ -47,8 +40,6 @@ class Tweet:
   def json_with_string_set(self):
     return {
       "id_str": self.id_str,
-      "text": self.text,
-      "urls": set(self.urls),
-      "insertion_date": self.insertion_date
+      "text": self.text
     }
   
