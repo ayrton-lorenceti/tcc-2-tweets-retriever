@@ -9,7 +9,7 @@ def lambda_handler(event, context):
   # Search result_type on DynamoDB
   dynamodb_search_metadata_response = DynamoDB.search(DynamoDB, "Search_Metadata", "result_type", result_type)
 
-  # Check if has found 'result_type'. If not, search by 'until'
+  # Check if 'result_type' have been found. If not, search for 'until'
   if (len(dynamodb_search_metadata_response) == 0):
     return retrieve_tweets_by_until_param(result_type)
 

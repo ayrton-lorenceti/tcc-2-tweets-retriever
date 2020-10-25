@@ -22,11 +22,11 @@ class Tweet:
     # Search tweet on DynamoDB
     dynamodb_tweet_response = DynamoDB.search(DynamoDB, "Tweets", "id_str", tweet.id_str)
 
-    # If already has tweet on DynamoDB, go to the next tweet
+    # If there is already tweet on DynamoDB, go on to the next tweet
     if (len(dynamodb_tweet_response) > 0):
       return
 
-    # If hasn't found tweet on DynamoDB, save it
+    # If no tweets have been found on DynanoDB, save it
     DynamoDB.put(DynamoDB, "Tweets", tweet.json_with_string_set())
 
     cls.tweets_saved += 1

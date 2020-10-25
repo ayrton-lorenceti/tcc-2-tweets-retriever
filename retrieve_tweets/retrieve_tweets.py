@@ -17,7 +17,7 @@ def retrieve_tweets_by_until_param(result_type):
   # Search tweets based on initial condition
   search_results = Tweepy.search_tweets(Tweepy, result_type, until=until_param)
 
-  # If hasn't found tweets, finishes Lambda
+  # If no tweets have been found, finish Lambda
   if (len(search_results["statuses"]) == 0):
     logger.info("### Method: retrieve_tweets_by_until_param() - No tweets found. ###")
 
@@ -44,7 +44,7 @@ def retrieve_tweets_by_result_type(result_type):
   # Search tweets by 'since_id'
   search_results = Tweepy.search_tweets(Tweepy, result_type, since_id=since_id)
 
-  # If hasn't found tweets, finishes Lambda
+  # If no tweets have been found, finish Lambda
   if (len(search_results["statuses"]) == 0):
     logger.info("### Method: retrieve_tweets_by_result_type() - No tweets found. ###")
     
